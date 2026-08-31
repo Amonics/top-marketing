@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Order — Top Marketing</title>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="assets/style.css" />
+<script src="https://js.stripe.com/basil/stripe.js"></script>
+</head>
+<body>
+
+<div class="page">
+  <div class="pagehead">
+    <a href="/" class="brand"><span class="brand-mark">TM</span><span>Top Marketing</span></a>
+    <a href="/" class="back">← Back to the catalogue</a>
+  </div>
+
+  <p class="result-state" id="stateLabel">checking…</p>
+  <h1 id="heading">Checking your payment</h1>
+  <p class="lead" id="message">One moment.</p>
+
+  <ul class="summary-list" id="lines" hidden></ul>
+
+  <p class="cta-row">
+    <a href="/" class="btn btn-soft btn-lg">Back to the catalogue</a>
+  </p>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const PUBLISHABLE_KEY =
+    'pk_live_51Tf56aV05ugTMbm9cVq67NzPqQY5jRFuF5lxeb6iqOBr45rNRZiSCmwLiLrfy5Ao5HsscnbarKjI4DQtkYq2C9E800ZUyaFhYx';
+
+  const STORAGE_KEY = 'topmarketing.cart.v1';
+
+  const stateLabel = document.getElementById('stateLabel');
+  const heading = document.getElementById('heading');
+  const message = document.getElementById('message');
+  const lines = document.getElementById('lines');
+
+  const setState = (cls, text) => {
+    stateLabel.className = 'result-state ' + cls;
+    stateLabel.textContent = text;
+  };
+
+  const secret = new URLSearchParams(location.search)
+    .get('payment_intent_client_secret');
+
+  if (!secret || typeof Stripe !== 'function') {
+    setState('', 'No order');
+    heading.textContent = 'Nothing to show';
+    message.textContent = 'This page is only reachable after a payment.';
+    return;
+  }
+
+  // Read what was ordered before the cart is cleared.
+  let ordered = [];
+  try {
+    ordered = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}').items || [];
+  } catch { /* nothing to show */ }
+
+  Stripe(PUBLISHABLE_KEY).retrievePaymentIntent(secret).then(({ paymentIntent }) => {
+    const money = cents =>
+      (cents / 100).toLocaleString('en-IE', { style: 'currency', currency: 'EUR' });
+
+    switch (paymentIntent?.status) {
+      case 'succeeded':
+        setState('good', 'Paid');
+        heading.textContent = 'Payment received';
+        message.textContent =
+          `Thanks — ${money(paymentIntent.amount)} paid. A receipt is on its ` +
+          'way to your inbox, and your course access follows in a separate email.';
+
+        if (ordered.length) {
+          lines.hidden = false;
+          lines.innerHTML = ordered
+            .map(i => `<li><span>${i.qty} × ${i.name}</span></li>`)
+            .join('');
+        }
+        localStorage.removeItem(STORAGE_KEY);
+        break;
+
+      case 'processing':
+        setState('', 'Pending');
+        heading.textContent = 'Payment in progress';
+        message.textContent =
+          'Your bank is still confirming this. We will email you as soon as it clears.';
+        break;
+
+      case 'requires_payment_method':
+        setState('bad', 'Not completed');
+        heading.textContent = 'Payment not completed';
+        message.textContent =
+          'Nothing was charged. You can go back and try a different method.';
+        break;
+
+      default:
+        setState('bad', 'Unknown');
+        heading.textContent = 'We could not read this order';
+        message.textContent =
+          'If you were charged, email us and we will sort it out.';
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+[
+{"n":1,"id":"day-trading","cat":"trading","title":"Day Trading Foundations","desc":"Market structure, order flow and the handful of setups worth trading. Built for people starting with a small account.","variants":[["Normal",7999,null],["Pro",11999,null],["Pro Max",12999,null]]},
+{"n":2,"id":"prop-firm","cat":"trading","title":"Futures & Prop Firm Challenges","desc":"Passing a funded-account evaluation without blowing it in week two: sizing rules, drawdown maths and session discipline.","variants":[["Normal",7499,null],["Pro",11999,null],["Pro Max",14000,null],["Ultra",15500,null],["Ultra Max",24000,null]]},
+{"n":3,"id":"technical-analysis","cat":"trading","title":"Technical Analysis in Depth","desc":"What price patterns actually tell you and which indicators are noise. Includes a chart-reading routine you can repeat daily.","variants":[["Normal",6750,7500],["Pro",8550,9500],["Pro Max",10350,11500]]},
+{"n":13,"id":"algo-bots","cat":"trading","title":"Algorithmic Trading Bots","desc":"Turning a rule set into code, backtesting it honestly, and knowing when a curve-fitted result is lying to you.","variants":[[null,14999,null]]},
+{"n":23,"id":"risk-management","cat":"trading","title":"Risk & Position Sizing","desc":"The part most traders skip. Expectancy, drawdown recovery and why your win rate matters less than you think.","variants":[[null,3999,null]]},
+{"n":29,"id":"crypto-trading","cat":"trading","title":"Crypto Trading Essentials","desc":"Exchanges, custody, liquidity and the structural differences that make crypto behave unlike equities.","variants":[[null,5999,null]]},
+
+{"n":4,"id":"dropshipping-system","cat":"dropshipping","title":"Dropshipping Starter System","desc":"End to end: niche, supplier, store, first ads. The complete route from nothing to a live shop taking orders.","variants":[[null,11999,null]]},
+{"n":5,"id":"product-research","cat":"dropshipping","title":"Product Research That Works","desc":"How to tell a product with margin from one that only looks good in a winning-products video.","variants":[["Normal",4049,4499],["Pro",6749,7499]]},
+{"n":11,"id":"supplier-sourcing","cat":"dropshipping","title":"Suppliers & Fulfilment","desc":"Finding agents, negotiating unit cost, and cutting delivery times before they cost you the refund.","variants":[[null,6749,7499]]},
+{"n":19,"id":"shopify-build","cat":"dropshipping","title":"Shopify Store Build","desc":"A store that converts: structure, product pages, trust signals and the checkout settings people forget.","variants":[[null,6499,null]]},
+{"n":26,"id":"retention","cat":"dropshipping","title":"Post-Purchase & Retention","desc":"The second order is where the profit is. Flows, support and the unglamorous work after the sale.","variants":[[null,6499,null]]},
+
+{"n":6,"id":"meta-ads","cat":"ads","title":"Meta Ads Fundamentals","desc":"Account structure, pixel setup and campaign types — the groundwork before you spend a euro on testing.","variants":[[null,4999,7000]]},
+{"n":7,"id":"meta-scaling","cat":"ads","title":"Meta Ads Scaling","desc":"Taking a profitable campaign from €50 to €1,000 a day without watching the return collapse on the way up.","variants":[[null,8910,9900]]},
+{"n":14,"id":"tiktok-ads","cat":"ads","title":"TikTok Ads for E-commerce","desc":"Why creative carries the account here, and how to brief and test ads at the volume the platform needs.","variants":[[null,6749,7499]]},
+{"n":17,"id":"google-ads","cat":"ads","title":"Google Ads for Shops","desc":"Search, Shopping and Performance Max: matching intent to campaign type instead of letting the algorithm guess.","variants":[["Normal",9999,null],["Pro",14999,null]]},
+{"n":22,"id":"creative-testing","cat":"ads","title":"Creative Testing Framework","desc":"A repeatable way to find out which ad actually won, and stop drawing conclusions from a sample of forty clicks.","variants":[[null,3149,3499]]},
+{"n":30,"id":"media-buying","cat":"ads","title":"Media Buying Masterclass","desc":"Buying attention across platforms as one budget: attribution, incrementality and reading a blended number.","variants":[[null,15999,null]]},
+
+{"n":8,"id":"short-form","cat":"content","title":"Short-Form Video Systems","desc":"Openings, retention and a publishing process you can sustain for a year instead of three weeks.","variants":[[null,7999,null]]},
+{"n":9,"id":"faceless","cat":"content","title":"Faceless Channel Blueprint","desc":"Scripting, voicing and editing without appearing on camera — and how to stay distinctive anyway.","variants":[[null,4049,4499]]},
+{"n":15,"id":"youtube-growth","cat":"content","title":"YouTube Long-Form Growth","desc":"Packaging before production, retention graphs read properly, and the revenue side once the views arrive.","variants":[[null,12999,null]]},
+{"n":20,"id":"instagram-growth","cat":"content","title":"Instagram Growth Playbook","desc":"Reels ranking, saves over likes, and borrowing an audience through collaboration rather than paying for it.","variants":[[null,7499,null]]},
+{"n":27,"id":"personal-brand","cat":"content","title":"Personal Brand on LinkedIn","desc":"Writing in public as a business channel: what gets distribution there and what quietly gets buried.","variants":[[null,5599,null]]},
+
+{"n":10,"id":"ai-content","cat":"ai","title":"AI Content Pipelines","desc":"Research to draft to publish with software doing the repetitive parts — and where handing over makes it worse.","variants":[[null,4499,null]]},
+{"n":16,"id":"automation","cat":"ai","title":"Automation with n8n & Make","desc":"Connecting your tools into workflows that run without you. Includes blueprints to import and adapt.","variants":[[null,7650,8500]]},
+{"n":25,"id":"ai-agents","cat":"ai","title":"AI Agents for Business","desc":"Where an agent genuinely replaces a task, how to give it the right context, and how to check what it did.","variants":[[null,6999,null]]},
+
+{"n":12,"id":"cold-email","cat":"agency","title":"Cold Email Client Acquisition","desc":"Deliverability, list building and the offer. Getting replies from people who never asked to hear from you.","variants":[[null,6499,null]]},
+{"n":18,"id":"smma","cat":"agency","title":"Social Media Marketing Agency","desc":"Building a service business around ads or content: positioning, pricing, delivery and the first five clients.","variants":[[null,8999,null]]},
+{"n":21,"id":"freelance-pricing","cat":"agency","title":"Freelance Pricing & Proposals","desc":"Moving off hourly rates, writing a proposal that closes, and handling the negotiation without discounting.","variants":[[null,4999,null]]},
+{"n":28,"id":"sales-calls","cat":"agency","title":"High-Ticket Sales Calls","desc":"Running a call that qualifies properly. Structure, objections and knowing when to end it early.","variants":[[null,6999,null]]},
+
+{"n":24,"id":"email-flows","cat":"copy","title":"Email Marketing & Flows","desc":"Welcome, abandoned cart and win-back sequences that carry revenue rather than just filling an inbox.","variants":[[null,3999,null]]},
+{"n":31,"id":"copywriting","cat":"copy","title":"Copywriting Starter","desc":"The free entry point. Headlines, offers and the structure behind copy that sells without shouting.","variants":[["Normal",0,null],["Pro",1499,null]]}
+]

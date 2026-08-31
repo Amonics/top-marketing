@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Checkout — Top Marketing</title>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="assets/style.css" />
+<script src="https://js.stripe.com/basil/stripe.js"></script>
+</head>
+<body>
+
+<div class="page">
+  <div class="pagehead">
+    <a href="/" class="brand"><span class="brand-mark">TM</span><span>Top Marketing</span></a>
+    <a href="/" class="back">← Back to the catalogue</a>
+  </div>
+
+  <div class="checkout-grid">
+
+    <!-- The form -->
+    <div class="payment">
+      <p class="pay-state" id="payState">Preparing your order…</p>
+
+      <p class="pay-empty" id="payEmpty" hidden>
+        Your cart is empty. <a href="/">Pick a course first.</a>
+      </p>
+
+      <form id="payForm" hidden novalidate>
+        <fieldset class="step">
+          <legend>Contact</legend>
+          <label class="field">
+            <span>Email address</span>
+            <input type="email" id="email" name="email" required
+                   autocomplete="email" placeholder="you@example.com" />
+          </label>
+          <p class="field-hint">Your receipt and course access are sent here.</p>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend>Billing details</legend>
+          <div id="addressBox"></div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend>Payment</legend>
+          <div id="paymentBox"></div>
+        </fieldset>
+
+        <p class="pay-fail" id="payFail" hidden></p>
+
+        <button type="submit" class="btn btn-hot btn-lg full" id="payButton">
+          <span id="payLabel">Pay</span>
+        </button>
+
+        <p class="fine-print">
+          Card details go straight to the payment processor and never touch our servers.
+        </p>
+      </form>
+    </div>
+
+    <!-- What they are buying -->
+    <aside class="summary">
+      <h3>Your order</h3>
+      <ul class="summary-list" id="summaryList"></ul>
+      <dl class="totals">
+        <div><dt>Subtotal</dt><dd id="sumSubtotal">€0</dd></div>
+        <div id="sumDiscountRow" hidden><dt>Discount</dt><dd id="sumDiscount">−€0</dd></div>
+        <div class="grand"><dt>Total</dt><dd id="sumTotal">€0</dd></div>
+      </dl>
+      <p class="note">VAT included · Instant access · Lifetime licence</p>
+    </aside>
+
+  </div>
+</div>
+
+<script>
+(async () => {
+  'use strict';
+
+  // Safe to publish — it can start a payment, never move money.
+  const PUBLISHABLE_KEY =
+    'pk_live_51Tf56aV05ugTMbm9cVq67NzPqQY5jRFuF5lxeb6iqOBr45rNRZiSCmwLiLrfy5Ao5HsscnbarKjI4DQtkYq2C9E800ZUyaFhYx';
+
+  const STORAGE_KEY = 'topmarketing.cart.v1';
+  const CODES = { LAUNCH20: 0.20, STUDENT10: 0.10 };
+
+  // The cart stores integer cents, exactly like assets/app.js — dividing here
+  // is the only place a price turns back into euros.
+  const money = cents =>
+    (cents / 100).toLocaleString('de-DE', {
+      style: 'currency', currency: 'EUR',
+      minimumFractionDigits: 2,
+    });
+
+  const $ = s => document.querySelector(s);
+  const state = $('#payState');
+  const form = $('#payForm');
+  const fail = $('#payFail');
+  const button = $('#payButton');
+  const label = $('#payLabel');
+
+  /* Cart */
+
+  let items = [], code = null;
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if (Array.isArray(saved.items)) items = saved.items;
+    if (saved.code in CODES) code = saved.code;
+  } catch { /* corrupted entry — treat as empty */ }
+
+  if (items.length === 0) {
+    state.hidden = true;
+    $('#payEmpty').hidden = false;
+    return;
+  }
+
+  $('#summaryList').innerHTML = items.map(i => `
+    <li><span>${i.qty} × ${i.name}</span><b>${money(i.price * i.qty)}</b></li>
+  `).join('');
+
+  // Rounded the same way as /api/payment-intent, so the button never promises
+  // a cent more or less than the card is actually charged.
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const total = Math.round(subtotal * (1 - (code ? CODES[code] : 0)));
+  const discount = subtotal - total;
+
+  $('#sumSubtotal').textContent = money(subtotal);
+  $('#sumDiscountRow').hidden = discount === 0;
+  $('#sumDiscount').textContent = '−' + money(discount);
+  $('#sumTotal').textContent = money(total);
+
+  if (typeof Stripe !== 'function') {
+    state.textContent =
+      'The payment form could not load. Check your connection and reload.';
+    return;
+  }
+
+  /* Payment */
+
+  try {
+    const res = await fetch('/api/payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Ids and quantities only. The server holds the prices.
+      body: JSON.stringify({
+        items: items.map(i => ({ id: i.id, qty: i.qty })),
+        code,
+      }),
+    });
+
+    // A gateway error page is HTML, not JSON — parsing it must not put a
+    // developer message like "Unexpected token '<'" in front of a customer.
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Could not start the payment');
+    if (!data.clientSecret) throw new Error('Could not start the payment');
+
+    const stripe = Stripe(PUBLISHABLE_KEY);
+
+    // Read the page's own colours so the inputs match the rest of the site
+    // instead of arriving in Stripe's default styling.
+    const css = getComputedStyle(document.body);
+    const pick = name => css.getPropertyValue(name).trim();
+
+    const elements = stripe.elements({
+      clientSecret: data.clientSecret,
+      appearance: {
+        theme: 'night',
+        variables: {
+          colorPrimary: pick('--hot-a'),
+          colorBackground: pick('--card'),
+          colorText: pick('--text'),
+          colorTextSecondary: pick('--text-2'),
+          colorTextPlaceholder: pick('--text-3'),
+          colorDanger: pick('--hot-a'),
+          fontFamily: pick('--sans'),
+          fontSizeBase: '16px',
+          borderRadius: '8px',
+          fontSizeSm: '13px',
+          spacingUnit: '4px',
+        },
+        rules: {
+          '.Input': {
+            border: `1px solid ${pick('--hair')}`,
+            backgroundColor: pick('--card'),
+            padding: '11px 13px',
+            boxShadow: 'none',
+          },
+          '.Input:focus': {
+            border: `1px solid ${pick('--hot-a')}`,
+            outline: 'none',
+            boxShadow: 'none',
+          },
+          '.Label': {
+            fontSize: '12.5px',
+            color: pick('--text-2'),
+            marginBottom: '5px',
+          },
+          '.Tab': {
+            border: `1px solid ${pick('--hair')}`,
+            backgroundColor: pick('--card'),
+            boxShadow: 'none',
+          },
+          '.Tab--selected': {
+            border: `1px solid ${pick('--hot-a')}`,
+            color: pick('--text'),
+            boxShadow: 'none',
+          },
+        },
+      },
+    });
+
+    // Billing address, with the full worldwide country list.
+    elements.create('address', { mode: 'billing' }).mount('#addressBox');
+
+    elements.create('payment', {
+      layout: 'tabs',
+      // No "save my details with Link" prompt inside the card fields.
+      wallets: { applePay: 'auto', googlePay: 'auto' },
+    }).mount('#paymentBox');
+
+    state.hidden = true;
+    form.hidden = false;
+    label.textContent = `Pay ${money(total)}`;
+
+    let busy = false;
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (busy) return;
+
+      const email = $('#email').value.trim();
+      if (!email || !email.includes('@')) {
+        fail.hidden = false;
+        fail.textContent = 'Please enter a valid email address.';
+        $('#email').focus();
+        return;
+      }
+
+      busy = true;
+      button.disabled = true;
+      label.textContent = 'Processing…';
+      fail.hidden = true;
+
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${location.origin}/return.html`,
+          receipt_email: email,
+        },
+      });
+
+      // Reaching this line means the payment did not go through; on success
+      // the browser has already been sent to return.html.
+      busy = false;
+      button.disabled = false;
+      label.textContent = `Pay ${money(total)}`;
+      fail.hidden = false;
+      fail.textContent = error?.message || 'The payment did not go through.';
+    });
+  } catch (err) {
+    state.textContent = err.message || 'Something went wrong. Please reload.';
+  }
+})();
+</script>
+
+</body>
+</html>
