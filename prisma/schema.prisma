@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  stripeSessionId String   @unique
+  sourceShop      String   // "shop-a" oder "shop-b"
+  productId       String
+  productName     String
+  amount          Int      // in Cent
+  currency        String   @default("eur")
+  customerEmail   String?
+  status          String   @default("pending") // pending | paid | failed | refunded
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([sourceShop])
+  @@index([status])
+  @@index([customerEmail])
+}
