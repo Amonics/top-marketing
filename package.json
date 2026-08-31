@@ -1,0 +1,10 @@
+{
+  "name": "top-marketing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Top Marketing — short-form video course shop",
+  "dependencies": {
+    "stripe": "^17.5.0"
+  }
+}
