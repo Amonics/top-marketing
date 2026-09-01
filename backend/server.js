@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const stripe = require('stripe')('sk_live_REMOVED');
+const stripe = require('stripe')('');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
