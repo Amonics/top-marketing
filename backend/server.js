@@ -1,6 +1,6 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
@@ -35,7 +35,7 @@ app.post('/create-checkout-session', async (req, res) => {
     for (const item of items) {
       if (!item.name || typeof item.price !== 'number' || item.price <= 0) {
         return res.status(400).json({
-          error: `Invalid item: each item needs a name and a positive price (cents). Got: ${JSON.stringify(item)}`
+          error: 'Invalid item: each item needs a name and a positive price (cents). Got: ' + JSON.stringify(item)
         });
       }
     }
@@ -58,7 +58,7 @@ app.post('/create-checkout-session', async (req, res) => {
       metadata: { shopOrigin: shopOrigin || 'unknown' }
     });
 
-    console.log(`[checkout] Session created: ${session.id} | shop: ${shopOrigin || 'unknown'}`);
+    console.log('[checkout] Session created: ' + session.id + ' | shop: ' + (shopOrigin || 'unknown'));
     return res.json({ url: session.url });
   } catch (err) {
     console.error('[checkout] Error creating session:', err.message);
@@ -67,6 +67,6 @@ app.post('/create-checkout-session', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[server] Headless Checkout API running on http://localhost:${PORT}`);
+  console.log('[server] Headless Checkout API running on http://localhost:' + PORT);
   console.log('[server] POST /create-checkout-session ready');
 });
