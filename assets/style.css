@@ -700,6 +700,13 @@ form { counter-reset: step; }
 
 .pay-state, .pay-empty { color: var(--text-2); font-size: 0.9rem; padding: 1.8rem 0; margin: 0; }
 .pay-fail { color: var(--hot-a); font-size: 0.86rem; margin: 0 0 0.8rem; }
+/* Zahlartenwahl im Checkout */
+.pay-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.pay-opt { display: flex; align-items: center; gap: 9px; border: 1px solid var(--hair); border-radius: 8px; padding: 11px 13px; cursor: pointer; font-size: 0.9rem; color: var(--text-2); transition: border-color .15s ease, color .15s ease; }
+.pay-opt:hover { border-color: var(--text-3); }
+.pay-opt.selected { border-color: var(--hot-a); color: var(--text); }
+.pay-opt input { accent-color: var(--hot-a); margin: 0; }
+@media (max-width: 480px) { .pay-choice { grid-template-columns: 1fr; } }
 .fine-print { font-size: 0.74rem; color: var(--text-3); text-align: center; margin: 0.85rem 0 0; }
 
 .result-state {

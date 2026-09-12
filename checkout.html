@@ -44,7 +44,20 @@
 
         <fieldset class="step">
           <legend>Payment</legend>
+          <!-- Zahlart: Karte laeuft ueber Stripe (Formular auf dieser Seite),
+               Whop bringt sein eigenes Kartenfeld samt Bezahlen-Knopf mit. -->
+          <div class="pay-choice" id="payChoice">
+            <label class="pay-opt selected" data-method="card">
+              <input type="radio" name="payMethod" value="card" checked>
+              <span>Card</span>
+            </label>
+            <label class="pay-opt" data-method="whop">
+              <input type="radio" name="payMethod" value="whop">
+              <span>Card via Whop</span>
+            </label>
+          </div>
           <div id="paymentBox"></div>
+          <div id="whopBox" hidden></div>
         </fieldset>
 
         <p class="pay-fail" id="payFail" hidden></p>
@@ -224,6 +237,110 @@
     label.textContent = `Pay ${money(total)}`;
 
     let busy = false;
+
+
+    /* ---- Whop as a second card option ----------------------------------
+       Four things about Whop's embed that are not in its documentation and
+       each cost an afternoon to find:
+
+       1. The billing street is `prefill-address-line1`, NOT `-address-line`.
+          A wrong attribute name is ignored silently, and together with
+          `hide-address` the checkout then has no street, cannot complete, and
+          the pay button simply does nothing when clicked.
+       2. The loader scans for embed containers exactly ONCE, when its
+          index.js initialises. It builds a MutationObserver for containers
+          added later but never calls .observe() on it — dead code. So the
+          loader has to be injected AFTER our container is in the DOM,
+          otherwise the box stays empty.
+       3. Whop's own button is labelled from the plan type ("Join"). It can be
+          relabelled with `theme-button-text`, which is undocumented but read
+          by the loader and passed straight through as free text.
+       4. Do not hide that button and submit programmatically: wco.submit()
+          posts a message the embed ignores while the button is hidden, so
+          nothing happens and there is no error either.
+    -------------------------------------------------------------------- */
+
+    const whopBox = $('#whopBox');
+    const paymentBox = $('#paymentBox');
+    let whopPlan = null;      // plan id of the embed currently mounted
+    let whopBusy = false;
+
+    function mountWhopLoader() {
+      const s = document.createElement('script');
+      s.src = 'https://js.whop.com/static/checkout/loader.js';
+      s.async = true;
+      document.head.appendChild(s);
+    }
+
+    async function showWhop() {
+      if (whopBusy) return;
+      whopBusy = true;
+      whopBox.hidden = false;
+      paymentBox.hidden = true;
+      button.hidden = true;             // Whop brings its own pay button
+      whopBox.innerHTML = '<p class="pay-state">Preparing the payment form…</p>';
+
+      try {
+        const res = await fetch('/api/whop-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          // Ids and quantities only — the server holds the prices.
+          body: JSON.stringify({
+            items: items.map(i => ({ id: i.id, qty: i.qty })),
+            code,
+            email: $('#email').value.trim(),
+            returnUrl: `${location.origin}/return.html`,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.planId) {
+          throw new Error(data.error || 'Could not start the payment');
+        }
+
+        const esc = v => String(v).replace(/"/g, '&quot;');
+        const email = $('#email').value.trim();
+
+        whopBox.innerHTML =
+          `<div id="whop-embedded-checkout"` +
+          ` data-whop-checkout-plan-id="${esc(data.planId)}"` +
+          ` data-whop-checkout-theme="dark"` +
+          ` data-whop-checkout-theme-button-text="Pay ${esc(money(total))}"` +
+          (email ? ` data-whop-checkout-prefill-email="${esc(email)}"` : '') +
+          `></div>`;
+
+        whopPlan = data.planId;
+        mountWhopLoader();                       // only now — see note 2 above
+      } catch (err) {
+        whopBox.innerHTML = '';
+        fail.hidden = false;
+        fail.textContent = err.message || 'Could not start the payment.';
+        showCard();
+      } finally {
+        whopBusy = false;
+      }
+    }
+
+    function showCard() {
+      whopBox.hidden = true;
+      whopBox.innerHTML = '';
+      whopPlan = null;
+      paymentBox.hidden = false;
+      button.hidden = false;
+      document.querySelector('.pay-opt[data-method="card"]')?.classList.add('selected');
+      document.querySelector('.pay-opt[data-method="whop"]')?.classList.remove('selected');
+      const cardRadio = document.querySelector('.pay-opt[data-method="card"] input');
+      if (cardRadio) cardRadio.checked = true;
+    }
+
+    document.querySelectorAll('.pay-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const method = opt.dataset.method;
+        document.querySelectorAll('.pay-opt').forEach(o =>
+          o.classList.toggle('selected', o === opt));
+        fail.hidden = true;
+        if (method === 'whop') showWhop(); else showCard();
+      });
+    });
 
     form.addEventListener('submit', async e => {
       e.preventDefault();
