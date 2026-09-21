@@ -83,10 +83,10 @@ for p in products:
           data-search="{H.escape((p['title'] + ' ' + p['desc'] + ' ' + row[1]).lower())}">
           <div class="thumb" style="background:linear-gradient(135deg,{a},{b})">
             <span class="thumb-mono">{row[4]}</span>
-            <span class="thumb-badge">TM</span>
+            <span class="thumb-badge">GW</span>
           </div>
           <h3>{H.escape(p['title'])}</h3>
-          <p class="card-by">{ICON['user']}Top Marketing</p>
+          <p class="card-by">{ICON['user']}Groundwork</p>
           <p class="card-desc">{H.escape(p['desc'])}</p>
           {variants}
           <p class="card-meta">{"".join(meta)}</p>

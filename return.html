@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Order — Top Marketing</title>
+<title>Order — Groundwork</title>
 <meta name="robots" content="noindex" />
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="assets/style.css" />
 <script src="https://js.stripe.com/basil/stripe.js"></script>
 </head>
@@ -12,7 +16,7 @@
 
 <div class="page">
   <div class="pagehead">
-    <a href="/" class="brand"><span class="brand-mark">TM</span><span>Top Marketing</span></a>
+    <a href="/" class="brand"><span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="3" fill="#1f4d3a"/><path d="M7 22.5h18M9.5 18h13M12 13.5h8M14.5 9h3" stroke="#f6f1e6" stroke-width="2.2" stroke-linecap="square"/></svg></span><span>Groundwork</span></a>
     <a href="/" class="back">← Back to the catalogue</a>
   </div>
 
@@ -31,10 +35,7 @@
 (() => {
   'use strict';
 
-  const PUBLISHABLE_KEY =
-    'pk_live_REMOVED';
-
-  const STORAGE_KEY = 'topmarketing.cart.v1';
+  const STORAGE_KEY = 'groundwork.cart.v1';
 
   const stateLabel = document.getElementById('stateLabel');
   const heading = document.getElementById('heading');
@@ -62,7 +63,16 @@
     ordered = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}').items || [];
   } catch { /* nothing to show */ }
 
-  Stripe(PUBLISHABLE_KEY).retrievePaymentIntent(secret).then(({ paymentIntent }) => {
+  // The publishable key comes from the STRIPE_PUBLISHABLE_KEY environment
+  // variable via /api/stripe-config, never from the page itself.
+  fetch('/api/stripe-config')
+    .then(r => r.json())
+    .then(cfg => {
+      if (!cfg.publishableKey) throw new Error('not configured');
+      return Stripe(cfg.publishableKey).retrievePaymentIntent(secret);
+    })
+    .catch(() => ({}))
+    .then(({ paymentIntent }) => {
     const money = cents =>
       (cents / 100).toLocaleString('en-IE', { style: 'currency', currency: 'EUR' });
 

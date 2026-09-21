@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Top Marketing — Payment Gateway</h1>
+      <h1>Groundwork — Payment Gateway</h1>
       <p>Dieser Service verarbeitet Zahlungen fuer alle verbundenen Shops.</p>
       <section style={{ marginTop: "2rem" }}>
         <h2>Endpunkte</h2>

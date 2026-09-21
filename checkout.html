@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Checkout — Top Marketing</title>
+<title>Checkout — Groundwork</title>
 <meta name="robots" content="noindex" />
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="assets/style.css" />
 <script src="https://js.stripe.com/basil/stripe.js"></script>
 </head>
@@ -12,7 +16,7 @@
 
 <div class="page">
   <div class="pagehead">
-    <a href="/" class="brand"><span class="brand-mark">TM</span><span>Top Marketing</span></a>
+    <a href="/" class="brand"><span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="3" fill="#1f4d3a"/><path d="M7 22.5h18M9.5 18h13M12 13.5h8M14.5 9h3" stroke="#f6f1e6" stroke-width="2.2" stroke-linecap="square"/></svg></span><span>Groundwork</span></a>
     <a href="/" class="back">← Back to the catalogue</a>
   </div>
 
@@ -91,11 +95,7 @@
 (async () => {
   'use strict';
 
-  // Safe to publish — it can start a payment, never move money.
-  const PUBLISHABLE_KEY =
-    'pk_live_REMOVED';
-
-  const STORAGE_KEY = 'topmarketing.cart.v1';
+  const STORAGE_KEY = 'groundwork.cart.v1';
   const CODES = { LAUNCH20: 0.20, STUDENT10: 0.10 };
 
   // The cart stores integer cents, exactly like assets/app.js — dividing here
@@ -152,6 +152,11 @@
   /* Payment */
 
   try {
+    // The publishable key lives in the STRIPE_PUBLISHABLE_KEY environment
+    // variable and is fetched here, never written into the page.
+    const cfg = await fetch('/api/stripe-config').then(r => r.json()).catch(() => ({}));
+    if (!cfg.publishableKey) throw new Error(cfg.error || 'Payments are not configured yet.');
+
     const res = await fetch('/api/payment-intent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -168,7 +173,7 @@
     if (!res.ok) throw new Error(data.error || 'Could not start the payment');
     if (!data.clientSecret) throw new Error('Could not start the payment');
 
-    const stripe = Stripe(PUBLISHABLE_KEY);
+    const stripe = Stripe(cfg.publishableKey);
 
     // Read the page's own colours so the inputs match the rest of the site
     // instead of arriving in Stripe's default styling.
@@ -178,7 +183,7 @@
     const elements = stripe.elements({
       clientSecret: data.clientSecret,
       appearance: {
-        theme: 'night',
+        theme: 'stripe',
         variables: {
           colorPrimary: pick('--hot-a'),
           colorBackground: pick('--card'),
@@ -303,7 +308,7 @@
         whopBox.innerHTML =
           `<div id="whop-embedded-checkout"` +
           ` data-whop-checkout-plan-id="${esc(data.planId)}"` +
-          ` data-whop-checkout-theme="dark"` +
+          ` data-whop-checkout-theme="light"` +
           ` data-whop-checkout-theme-button-text="Pay ${esc(money(total))}"` +
           (email ? ` data-whop-checkout-prefill-email="${esc(email)}"` : '') +
           `></div>`;

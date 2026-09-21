@@ -1,4 +1,4 @@
-# Top Marketing — online stellen
+# Groundwork — online stellen
 
 Von den Dateien auf deinem Mac zu einer öffentlichen Adresse mit eigener Domain.
 
@@ -61,12 +61,12 @@ Bei der Bestellung:
 Bezahlen und die Bestätigungsmail abwarten. Zugangsdaten zum Kundenkonto
 notieren — du brauchst sie in Teil 6.
 
-> **Bevor du dich auf den Namen festlegst:** „Top Marketing" ist als
+> **Bevor du dich auf den Namen festlegst:** „Groundwork" ist als
 > Bezeichnung sehr generisch, und es gibt in Deutschland mehrere Firmen, die so
 > oder ähnlich heißen. Schützen lässt sich der Name deshalb kaum, und im
 > ungünstigsten Fall meldet sich jemand mit älteren Rechten. Eine kostenlose
 > Vorabprüfung geht im [DPMAregister](https://register.dpma.de) — Suche nach
-> „Top Marketing" in Klasse 41 (Ausbildung, Unterhaltung). Zehn Minuten, die
+> „Groundwork" in Klasse 41 (Ausbildung, Unterhaltung). Zehn Minuten, die
 > dir später viel Ärger sparen können.
 
 ---
@@ -141,7 +141,7 @@ Du solltest sehen:
 ?? DEPLOY.md
 ?? assets/
 ?? index.html
-?? top-marketing-standalone.html
+?? groundwork-standalone.html
 ```
 
 Der Ordner `.claude` taucht eventuell auch auf — der stört nicht.
@@ -334,7 +334,7 @@ Nach etwa 30 Sekunden ist die Änderung live. Den Fortschritt siehst du im
 Vercel-Dashboard unter **Deployments**.
 
 **Wichtig:** Wenn du `index.html`, `assets/style.css` oder `assets/app.js`
-bearbeitest, ist `top-marketing-standalone.html` danach veraltet. Die Datei ist
+bearbeitest, ist `groundwork-standalone.html` danach veraltet. Die Datei ist
 nur eine Kopie zum lokalen Ansehen — für die Live-Seite zählt `index.html`.
 
 ---

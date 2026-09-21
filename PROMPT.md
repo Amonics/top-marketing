@@ -71,7 +71,7 @@ WAS NOCH OFFEN IST (in dieser Reihenfolge)
    HTTPS-Zertifikat ausgestellt ist
 3. git push - der Stripe-Checkout ist lokal committet, aber noch nicht
    hochgeladen (1 Commit ahead)
-4. STRIPE_SECRET_KEY in den Vercel Environment Variables eintragen.
+4. STRIPE_SECRET_KEY und STRIPE_PUBLISHABLE_KEY in den Vercel Environment Variables eintragen.
    WICHTIG: Ich soll den Secret Key niemals in den Chat kopieren, nur
    direkt bei Vercel eintragen. Erinnere mich daran.
 5. Auf Stripe-Testmodus umstellen zum Ausprobieren (pk_test in

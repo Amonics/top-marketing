@@ -16,14 +16,14 @@ import { CATALOGUE, CODES } from './_catalogue.js';
 
 const WHOP_API = 'https://api.whop.com/api/v1/checkout_configurations';
 
-// Order reference: TM- + 8 unambiguous characters (no 0/O/1/I).
+// Order reference: GW- + 8 unambiguous characters (no 0/O/1/I).
 function reference() {
   const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
   let out = '';
   for (let i = 0; i < 8; i++) {
     out += alphabet[Math.floor(Math.random() * alphabet.length)];
   }
-  return 'TM-' + out;
+  return 'GW-' + out;
 }
 
 export default async function handler(req, res) {

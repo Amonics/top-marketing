@@ -1,9 +1,9 @@
-/* Top Marketing — cart */
+/* Groundwork — cart */
 
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'topmarketing.cart.v1';
+  const STORAGE_KEY = 'groundwork.cart.v1';
   const CODES = { LAUNCH20: 0.20, STUDENT10: 0.10 };
 
   // Everything is integer cents — money() is the only place that divides.
